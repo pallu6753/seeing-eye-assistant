@@ -2,95 +2,93 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* Accessibility-First Design System
+   Maximum contrast, voice-first, minimal visual dependency
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core - Maximum Contrast */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Primary - Bright Yellow for visibility */
+    --primary: 50 100% 50%;
+    --primary-foreground: 0 0% 0%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Secondary - Cool gray */
+    --secondary: 210 10% 20%;
+    --secondary-foreground: 0 0% 100%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Muted - Subtle dark */
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 70%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Accent - Cyan for active states */
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 0%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Danger - Bright red for emergencies */
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Safe - Green for positive states */
+    --safe: 120 100% 40%;
+    --safe-foreground: 0 0% 0%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Warning - Orange for caution */
+    --warning: 30 100% 50%;
+    --warning-foreground: 0 0% 0%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Card and popover */
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* Borders */
+    --border: 0 0% 25%;
+    --input: 0 0% 15%;
+    --ring: 50 100% 50%;
 
-    --sidebar-background: 0 0% 98%;
+    --radius: 1rem;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 0 0% 5%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 50 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 25%;
+    --sidebar-ring: 50 100% 50%;
   }
 
+  /* No dark mode needed - always high contrast */
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --primary: 50 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 210 10% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 180 100% 50%;
+    --accent-foreground: 0 0% 0%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --safe: 120 100% 40%;
+    --safe-foreground: 0 0% 0%;
+    --warning: 30 100% 50%;
+    --warning-foreground: 0 0% 0%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 5%;
+    --popover-foreground: 0 0% 100%;
+    --border: 0 0% 25%;
+    --input: 0 0% 15%;
+    --ring: 50 100% 50%;
   }
 }
 
@@ -99,7 +97,139 @@ All colors MUST be HSL.
     @apply border-border;
   }
 
+  html {
+    /* Prevent zooming issues on mobile */
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    /* Prevent scroll bounce */
+    overscroll-behavior: none;
+    /* Full height */
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* Large touch targets for accessibility */
+  button, a, [role="button"] {
+    min-height: 60px;
+    min-width: 60px;
+  }
+
+  /* Focus states - critical for accessibility */
+  :focus-visible {
+    @apply outline-none ring-4 ring-ring ring-offset-2 ring-offset-background;
+  }
+}
+
+@layer components {
+  /* Large action button - primary interaction element */
+  .btn-action {
+    @apply flex items-center justify-center gap-4 w-full py-8 px-6 rounded-2xl font-bold text-2xl transition-all duration-200 active:scale-95;
+  }
+
+  .btn-action-primary {
+    @apply btn-action bg-primary text-primary-foreground;
+  }
+
+  .btn-action-danger {
+    @apply btn-action bg-destructive text-destructive-foreground;
+  }
+
+  .btn-action-safe {
+    @apply btn-action bg-safe text-safe-foreground;
+  }
+
+  .btn-action-accent {
+    @apply btn-action bg-accent text-accent-foreground;
+  }
+
+  /* Status indicator */
+  .status-indicator {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl text-lg font-medium;
+  }
+
+  .status-active {
+    @apply status-indicator bg-safe/20 text-safe border-2 border-safe;
+  }
+
+  .status-warning {
+    @apply status-indicator bg-warning/20 text-warning border-2 border-warning;
+  }
+
+  .status-danger {
+    @apply status-indicator bg-destructive/20 text-destructive border-2 border-destructive;
+  }
+
+  /* Camera viewport */
+  .camera-view {
+    @apply relative w-full aspect-video bg-muted rounded-2xl overflow-hidden;
+  }
+
+  /* Detection overlay */
+  .detection-box {
+    @apply absolute border-4 rounded-lg pointer-events-none;
+  }
+
+  .detection-label {
+    @apply absolute -top-8 left-0 px-2 py-1 text-sm font-bold rounded;
+  }
+
+  /* Pulse animation for active detection */
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.3);
+      opacity: 0;
+    }
+  }
+
+  .pulse-active::before {
+    content: '';
+    @apply absolute inset-0 rounded-full bg-safe;
+    animation: pulse-ring 1.5s ease-out infinite;
+  }
+
+  /* Emergency pulse */
+  @keyframes emergency-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .emergency-active {
+    animation: emergency-pulse 0.5s ease-in-out infinite;
+  }
+
+  /* Screen reader only */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+@layer utilities {
+  /* Safe area padding for mobile */
+  .safe-area-inset {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Prevent text selection for buttons */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 }

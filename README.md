@@ -1,73 +1,105 @@
-# Welcome to your Lovable project
+# Vision Assistant - Accessibility AI
 
-## Project info
+A voice-first accessibility assistant for blind and visually impaired users. Uses real-time camera-based object detection and OCR to help users navigate their environment safely.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Features
 
-## How can I edit this code?
+### Core Functionality
 
-There are several ways of editing your application.
+- **Continuous Object Detection**: Uses TensorFlow.js with COCO-SSD to detect objects in real-time
+- **Direction & Distance**: Estimates relative position (left/center/right) and approximate distance
+- **Text Reading (OCR)**: Uses Tesseract.js to recognize and read text aloud
+- **Voice Commands**: Control the app hands-free with voice
+- **Priority System**: Dangerous objects (vehicles) interrupt and take priority
+- **Emergency Mode**: One-button emergency alert with alarm sound
 
-**Use Lovable**
+### Accessibility Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **High Contrast UI**: Pure black background with bright text
+- **Large Touch Targets**: 60px+ buttons for easy interaction
+- **Haptic Feedback**: Vibration patterns for different events
+- **No Visual Dependency**: All information announced via speech
+- **Voice Control**: Full hands-free operation
 
-Changes made via Lovable will be committed automatically to this repo.
+## Voice Commands
 
-**Use your preferred IDE**
+- **"Detect"** or **"Start"**: Begin object detection
+- **"Read"** or **"Read text"**: Scan for and read text
+- **"Stop"**: Stop all operations
+- **"Repeat"**: Repeat last announcement
+- **"Emergency"** or **"Help"**: Activate emergency mode
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Technology Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Frontend**: React + TypeScript + Vite
+- **Object Detection**: TensorFlow.js + COCO-SSD
+- **OCR**: Tesseract.js
+- **Speech**: Web Speech API (synthesis + recognition)
+- **Camera**: MediaDevices API
+- **Haptics**: Vibration API
 
-Follow these steps:
+## Object Detection
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+Detects and announces:
+- **Critical**: Vehicles (car, truck, bus, motorcycle, bicycle)
+- **High Priority**: People, animals
+- **Normal**: Doors, stairs, traffic signs
+- **Low Priority**: Furniture, bottles, plants
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## Distance Estimation
 
-# Step 3: Install the necessary dependencies.
-npm i
+Estimates distance based on object bounding box size:
+- **Close**: < 1 meter
+- **Medium**: 1-3 meters  
+- **Far**: > 3 meters
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## Direction Detection
+
+Determines position based on bounding box center:
+- **Left**: Object in left third of frame
+- **Center**: Object in middle third
+- **Right**: Object in right third
+
+## Browser Requirements
+
+- Modern browser with camera access
+- WebGL support (for TensorFlow.js)
+- Web Speech API support (for voice)
+- HTTPS required for camera access on mobile
+
+## Usage
+
+1. Grant camera permission when prompted
+2. Wait for "Assistant ready" announcement
+3. Press "Start Detection" or say "detect"
+4. Point camera at environment
+5. Listen to object announcements
+6. Say "read text" to read visible text
+7. Press "Emergency" if help needed
+
+## Development
+
+```bash
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## Building
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```bash
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Permissions Required
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+- Camera access (for object/text detection)
+- Microphone access (for voice commands)
+- Notifications (optional, for alerts)
 
-## What technologies are used for this project?
+## Safety Notes
 
-This project is built with:
+This is an assistive tool, not a replacement for mobility training or aids. Always use in conjunction with other navigation methods.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## License
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT
