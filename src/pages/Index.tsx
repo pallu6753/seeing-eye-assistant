@@ -1,7 +1,7 @@
-import { AccessibilityAssistant } from '@/components/AccessibilityAssistant';
+import { BlindCompanion } from '@/components/BlindCompanion';
 
 const Index = () => {
-  return <AccessibilityAssistant />;
+  return <BlindCompanion />;
 };
 
 export default Index;
