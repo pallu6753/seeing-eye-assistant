@@ -92,8 +92,11 @@ class SpeechManager {
       };
 
       this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-        console.error('Speech recognition error:', event.error);
-        if (event.error !== 'no-speech' && this.isListening) {
+        // Ignore 'aborted' and 'no-speech' as these are expected during normal operation
+        if (event.error !== 'aborted' && event.error !== 'no-speech') {
+          console.error('Speech recognition error:', event.error);
+        }
+        if (event.error !== 'no-speech' && event.error !== 'aborted' && this.isListening) {
           // Restart recognition
           setTimeout(() => this.startListening(this.onCommandCallback!), 1000);
         }

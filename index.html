@@ -2,25 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
-    <title>Vision Assistant - Accessibility AI</title>
-    <meta name="description" content="Voice-first accessibility assistant for blind and visually impaired users. Real-time object detection and text reading using AI." />
+    <title>Blind Companion - Accessibility AI Assistant</title>
+    <meta name="description" content="Voice-first AI assistant for blind and visually impaired users. Real-time object detection, text reading, navigation, and safety features." />
     <meta name="author" content="Lovable" />
+    <meta name="keywords" content="accessibility, blind, visually impaired, AI assistant, object detection, text to speech, navigation" />
     
     <!-- PWA / Mobile -->
     <meta name="theme-color" content="#000000" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Vision AI" />
+    <meta name="apple-mobile-web-app-title" content="Blind Companion" />
     <meta name="mobile-web-app-capable" content="yes" />
-    
-    <!-- Prevent caching for development -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     
     <!-- Open Graph -->
-    <meta property="og:title" content="Vision Assistant - Accessibility AI" />
-    <meta property="og:description" content="Voice-first accessibility assistant with real-time object detection and text reading." />
+    <meta property="og:title" content="Blind Companion - AI Accessibility Assistant" />
+    <meta property="og:description" content="Voice-first AI assistant with real-time object detection, text reading, and navigation for blind and visually impaired users." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
 
@@ -28,11 +28,19 @@
     <meta name="twitter:site" content="@Lovable" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
     
-    <!-- Prevent text zoom on iOS -->
+    <!-- Accessibility -->
     <style>
       html {
         -webkit-text-size-adjust: 100%;
         text-size-adjust: 100%;
+      }
+      /* Reduce motion for users who prefer it */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
       }
     </style>
   </head>
