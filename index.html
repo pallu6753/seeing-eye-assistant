@@ -1,52 +1,95 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <title>Blind Companion - Accessibility AI Assistant</title>
-    <meta name="description" content="Voice-first AI assistant for blind and visually impaired users. Real-time object detection, text reading, navigation, and safety features." />
-    <meta name="author" content="Lovable" />
-    <meta name="keywords" content="accessibility, blind, visually impaired, AI assistant, object detection, text to speech, navigation" />
-    
-    <!-- PWA / Mobile -->
-    <meta name="theme-color" content="#000000" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Blind Companion" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    
-    <!-- Open Graph -->
-    <meta property="og:title" content="Blind Companion - AI Accessibility Assistant" />
-    <meta property="og:description" content="Voice-first AI assistant with real-time object detection, text reading, and navigation for blind and visually impaired users." />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+<head>
+  <meta charset="UTF-8" />
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    
-    <!-- Accessibility -->
-    <style>
-      html {
-        -webkit-text-size-adjust: 100%;
-        text-size-adjust: 100%;
-      }
-      /* Reduce motion for users who prefer it */
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-        }
-      }
-    </style>
-  </head>
+  <!-- Mobile + Accessibility -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+  <title>Blind Companion – Voice First AI Assistant</title>
+
+  <meta name="description" content="Blind Companion is a voice-first AI assistant for visually impaired users. Live object detection, OCR reading, navigation, and Safe Walk mode." />
+  <meta name="author" content="Pallavi R" />
+  <meta name="keywords" content="blind companion, accessibility ai, object detection, voice assistant, navigation, safe walk" />
+
+  <!-- PWA -->
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Blind Companion" />
+  <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+
+  <!-- Accessibility -->
+  <meta name="color-scheme" content="dark light" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Blind Companion AI" />
+  <meta property="og:description" content="Voice-first AI companion for blind users with navigation, camera vision, and safety." />
+  <meta property="og:type" content="website" />
+
+  <!-- Reduce motion -->
+  <style>
+    html {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      touch-action: manipulation;
+    }
+
+    body {
+      margin: 0;
+      background: #000;
+      color: white;
+      font-family: system-ui, sans-serif;
+    }
+
+    button {
+      min-height: 56px;
+      font-size: 18px;
+    }
+
+    /* Screen reader live region */
+    #aria-status {
+      position: absolute;
+      left: -9999px;
+      height: 1px;
+      width: 1px;
+      overflow: hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Screen Reader + Voice Status -->
+  <div id="aria-status" aria-live="assertive"></div>
+
+  <!-- App Root -->
+  <main id="root"
+    role="application"
+    aria-label="Blind Companion Voice Assistant">
+  </main>
+
+  <!-- Startup Voice -->
+  <script>
+    window.addEventListener("load", () => {
+      if ('speechSynthesis' in window) {
+        const msg = new SpeechSynthesisUtterance("Welcome to Blind Companion. Safe Walk mode ready.");
+        msg.rate = 0.9;
+        window.speechSynthesis.speak(msg);
+      }
+    });
+  </script>
+
+  <script type="module" src="/src/main.tsx"></script>
+
+</body>
 </html>
