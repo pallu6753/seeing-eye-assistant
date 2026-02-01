@@ -6,6 +6,9 @@ import { useFallDetection } from '@/hooks/useFallDetection';
 import { useWakeWord } from '@/hooks/useWakeWord';
 import { useNavigation } from '@/hooks/useNavigation';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
+import { useGestureControls } from '@/hooks/useGestureControls';
+import { useContinuousFeedback } from '@/hooks/useContinuousFeedback';
+import { useSpeakOnTap } from '@/hooks/useSpeakOnTap';
 import { speak, stopSpeech } from '@/lib/speech';
 import { haptics } from '@/lib/haptics';
 import { modeManager, MODE_CONFIGS, type AppMode } from '@/lib/mode-manager';
@@ -17,7 +20,7 @@ import { FindObjectPanel } from '@/components/FindObjectPanel';
 import { EmergencyOverlay } from '@/components/EmergencyOverlay';
 import { SettingsPanel } from '@/components/SettingsPanel';
 import { DetectionOverlay } from '@/components/DetectionOverlay';
-import { Settings, Download } from 'lucide-react';
+import { Settings, Download, MapPin } from 'lucide-react';
 import type { ProcessedDetection } from '@/lib/detection-utils';
 
 interface AppSettings {
@@ -48,6 +51,9 @@ export function BlindCompanion() {
   
   const containerRef = useRef<HTMLDivElement>(null);
   const announcementCooldownRef = useRef<Map<string, number>>(new Map());
+
+  // Speak on tap hook
+  const { createTapHandler } = useSpeakOnTap();
 
   // Hooks
   const { 
@@ -125,6 +131,24 @@ export function BlindCompanion() {
 
   const { isInstallable, promptInstall } = usePWAInstall();
 
+  // Gesture controls
+  useGestureControls({
+    enabled: isInitialized && mode !== 'emergency',
+    onSwipeLeft: () => handleDetect(),
+    onSwipeRight: () => handleRead(),
+    onSwipeUp: () => handleSafeWalk(),
+    onSwipeDown: () => handleEmergency(),
+  });
+
+  // Continuous voice feedback during Safe Walk
+  useContinuousFeedback({
+    enabled: mode === 'safe-walk',
+    detections,
+    intervalMs: 5000,
+    isNavigating: navigation.isNavigating,
+    currentNavigationStep: navigation.currentStep?.instruction || null,
+  });
+
   // Apply haptics settings
   useEffect(() => {
     haptics.setStrength(settings.vibrationStrength);
@@ -146,7 +170,7 @@ export function BlindCompanion() {
   // Initialize
   useEffect(() => {
     const init = async () => {
-      speak('Loading Blind Companion. Please wait.', 'normal');
+      speak('Loading Safe Walk. Please wait.', 'normal');
       
       try {
         await loadModel();
@@ -154,7 +178,7 @@ export function BlindCompanion() {
         startWakeWord();
         startFallDetection();
         setIsInitialized(true);
-        speak('Companion ready. Say "Hey Assist" followed by a command, or use the buttons below.', 'normal');
+        speak('Safe Walk ready. Say "Hey Assist" or swipe to control.', 'normal');
       } catch (err) {
         console.error('Initialization error:', err);
         speak('Failed to initialize. Please check camera permissions.', 'high');
@@ -337,7 +361,6 @@ export function BlindCompanion() {
       if (videoRef.current && isModelLoaded) {
         startContinuousDetection(videoRef.current);
         modeManager.setMode('safe-walk');
-        speak('Safe walk activated. I will warn you of obstacles.', 'normal');
       }
     }
   }, [mode, isModelLoaded, videoRef, startContinuousDetection, stopContinuousDetection, navigation]);
@@ -381,6 +404,16 @@ export function BlindCompanion() {
     // Remote help would require backend - show info for now
   }, []);
 
+  const handleTryLocation = useCallback(() => {
+    speak('Try demo location. Starting navigation to Majestic Bus Station.', 'high');
+    // Start safe walk with navigation
+    if (videoRef.current && isModelLoaded) {
+      startContinuousDetection(videoRef.current);
+      modeManager.setMode('safe-walk');
+    }
+    navigation.startDemoNavigation();
+  }, [videoRef, isModelLoaded, startContinuousDetection, navigation]);
+
   const config = MODE_CONFIGS[mode];
   const foundObjects = detections.map(d => d.object);
 
@@ -412,9 +445,9 @@ export function BlindCompanion() {
         fallDetectionActive={isFallDetectionActive}
       />
 
-      {/* Camera + Detection */}
-      <main className="flex-1 px-4 py-3 flex flex-col gap-4 min-h-0 overflow-y-auto">
-        <div ref={containerRef} className="h-48 md:h-64 flex-shrink-0">
+      {/* Camera + Detection - 35% height */}
+      <main className="flex-1 px-4 py-3 flex flex-col gap-3 min-h-0 overflow-y-auto">
+        <div ref={containerRef} className="h-[35vh] min-h-[200px] flex-shrink-0">
           <CameraPreview
             ref={videoRef}
             isStreaming={isStreaming}
@@ -458,13 +491,13 @@ export function BlindCompanion() {
           />
         )}
 
-        {/* Main Action Grid */}
+        {/* Main Action Grid - 2x2 + Try Location */}
         <nav className="grid grid-cols-2 gap-3" aria-label="Main actions">
           <ModeButton
             variant="detect"
             isActive={mode === 'detecting'}
             disabled={!isModelLoaded}
-            onClick={handleDetect}
+            onClick={createTapHandler('detect', handleDetect, false)}
             size="large"
           >
             {mode === 'detecting' ? 'Stop' : 'Detect'}
@@ -475,7 +508,7 @@ export function BlindCompanion() {
             isActive={mode === 'reading'}
             isLoading={isOCRProcessing}
             disabled={!isStreaming}
-            onClick={handleRead}
+            onClick={createTapHandler('read', handleRead, false)}
             size="large"
           >
             Read Text
@@ -485,38 +518,57 @@ export function BlindCompanion() {
             variant="safe-walk"
             isActive={mode === 'safe-walk'}
             disabled={!isModelLoaded}
-            onClick={handleSafeWalk}
+            onClick={createTapHandler('safe-walk', handleSafeWalk, false)}
             size="large"
           >
-            Safe Walk
+            {mode === 'safe-walk' ? 'Stop Walk' : 'Safe Walk'}
           </ModeButton>
 
           <ModeButton
-            variant="help"
-            onClick={handleHelp}
+            variant="navigate"
+            isActive={navigation.isNavigating}
+            disabled={!navigation.isSupported}
+            onClick={createTapHandler('navigate', () => {
+              if (navigation.isNavigating) {
+                navigation.stopNavigation();
+              } else {
+                speak('Use Try Location button below for demo navigation.', 'normal');
+              }
+            }, false)}
             size="large"
           >
-            Help Me
+            Navigate
           </ModeButton>
         </nav>
+
+        {/* Try This Location Button */}
+        <button
+          onClick={createTapHandler('try-location', handleTryLocation, false)}
+          className="flex items-center justify-center gap-3 w-full h-16 min-h-[64px] rounded-2xl border-2 
+                     bg-accent text-accent-foreground border-accent font-bold text-lg
+                     transition-all duration-200 active:scale-95 focus:outline-none focus:ring-4 focus:ring-ring"
+          aria-label="Try demo location navigation"
+        >
+          <MapPin className="w-6 h-6" aria-hidden="true" />
+          <span>📍 Try This Location</span>
+        </button>
 
         {/* Emergency Button */}
         <ModeButton
           variant="emergency"
           isActive={mode === 'emergency'}
-          onClick={handleEmergency}
+          onClick={createTapHandler('emergency', handleEmergency, false)}
           size="full"
-          className="mt-2"
         >
-          {mode === 'emergency' ? 'Cancel Emergency' : 'Emergency'}
+          {mode === 'emergency' ? 'Cancel Emergency' : '🚨 Emergency'}
         </ModeButton>
       </main>
 
       {/* Footer Actions */}
       <footer className="flex-shrink-0 p-4 border-t border-border bg-card flex items-center justify-between">
         <button
-          onClick={() => setShowSettings(true)}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80"
+          onClick={createTapHandler('settings', () => setShowSettings(true), true)}
+          className="flex items-center gap-2 px-4 py-3 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 min-h-[48px]"
           aria-label="Open settings"
         >
           <Settings className="w-5 h-5" />
@@ -525,16 +577,16 @@ export function BlindCompanion() {
 
         {isInstallable && (
           <button
-            onClick={promptInstall}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={createTapHandler('install', promptInstall, true)}
+            className="flex items-center gap-2 px-4 py-3 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 min-h-[48px]"
           >
             <Download className="w-5 h-5" />
             <span>Install App</span>
           </button>
         )}
 
-        <p className="text-xs text-muted-foreground max-w-[100px] text-center">
-          Say "Hey Assist"
+        <p className="text-sm text-muted-foreground max-w-[120px] text-center leading-tight">
+          Swipe to control
         </p>
       </footer>
     </div>
