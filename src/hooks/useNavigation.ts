@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { haptics } from '@/lib/haptics';
+import { speak } from '@/lib/speech';
 
 interface Position {
   latitude: number;
@@ -9,7 +10,7 @@ interface Position {
   speed: number | null;
 }
 
-interface NavigationStep {
+export interface NavigationStep {
   instruction: string;
   distance: number; // meters
   direction: 'straight' | 'left' | 'right' | 'slight-left' | 'slight-right' | 'u-turn';
@@ -20,6 +21,7 @@ interface NavigationState {
   isNavigating: boolean;
   currentPosition: Position | null;
   destination: string | null;
+  destinationCoords: { lat: number; lng: number } | null;
   currentStep: NavigationStep | null;
   nextStep: NavigationStep | null;
   remainingDistance: number; // meters
@@ -34,19 +36,27 @@ interface UseNavigationOptions {
 }
 
 interface UseNavigationReturn extends NavigationState {
-  startNavigation: (destination: string) => Promise<void>;
+  startNavigation: (destination: string, coords?: { lat: number; lng: number }) => Promise<void>;
   stopNavigation: () => void;
   requestPosition: () => void;
   isSupported: boolean;
+  startDemoNavigation: () => void;
 }
 
-// Mock navigation steps for demo (in production, use real maps API)
+// Demo navigation to Bangalore Majestic (the provided Google Maps link location)
+// https://maps.app.goo.gl/xLTivkKikmxMZH556 -> Bangalore Majestic Bus Station
+const DEMO_DESTINATION = {
+  name: 'Majestic Bus Station, Bangalore',
+  coords: { lat: 12.9778, lng: 77.5713 },
+};
+
+// Mock navigation steps for demo (simulates turn-by-turn)
 const mockSteps: NavigationStep[] = [
-  { instruction: 'Walk straight for 50 meters', distance: 50, direction: 'straight', streetName: 'Main Street' },
-  { instruction: 'Turn left onto Oak Avenue', distance: 0, direction: 'left', streetName: 'Oak Avenue' },
-  { instruction: 'Continue for 100 meters', distance: 100, direction: 'straight' },
-  { instruction: 'Turn right onto Park Road', distance: 0, direction: 'right', streetName: 'Park Road' },
-  { instruction: 'Your destination is on the left', distance: 25, direction: 'slight-left' },
+  { instruction: 'Walk straight for 50 meters', distance: 50, direction: 'straight', streetName: 'Main Road' },
+  { instruction: 'Turn right in 20 meters', distance: 20, direction: 'right', streetName: 'Station Road' },
+  { instruction: 'Continue straight for 80 meters', distance: 80, direction: 'straight' },
+  { instruction: 'Turn left onto Platform Road', distance: 30, direction: 'left', streetName: 'Platform Road' },
+  { instruction: 'Your destination is ahead on the right', distance: 20, direction: 'slight-right' },
 ];
 
 export function useNavigation(options: UseNavigationOptions = {}): UseNavigationReturn {
@@ -56,6 +66,7 @@ export function useNavigation(options: UseNavigationOptions = {}): UseNavigation
     isNavigating: false,
     currentPosition: null,
     destination: null,
+    destinationCoords: null,
     currentStep: null,
     nextStep: null,
     remainingDistance: 0,
@@ -128,7 +139,7 @@ export function useNavigation(options: UseNavigationOptions = {}): UseNavigation
     }
   }, [state.isNavigating, onPositionUpdate, onStepChange, onArrival]);
 
-  const startNavigation = useCallback(async (destination: string) => {
+  const startNavigation = useCallback(async (destination: string, coords?: { lat: number; lng: number }) => {
     if (!isSupported) {
       setState(prev => ({ ...prev, error: 'Geolocation not supported' }));
       return;
@@ -156,6 +167,7 @@ export function useNavigation(options: UseNavigationOptions = {}): UseNavigation
         ...prev,
         isNavigating: true,
         destination,
+        destinationCoords: coords || null,
         currentStep: mockSteps[0],
         nextStep: mockSteps[1] || null,
         remainingDistance: totalDistance,
@@ -163,6 +175,8 @@ export function useNavigation(options: UseNavigationOptions = {}): UseNavigation
         error: null,
       }));
 
+      // Announce navigation start
+      speak(`Navigation started. ${mockSteps[0].instruction}`, 'high');
       onStepChange?.(mockSteps[0]);
     } catch (error) {
       setState(prev => ({ 
@@ -211,11 +225,18 @@ export function useNavigation(options: UseNavigationOptions = {}): UseNavigation
     };
   }, []);
 
+  // Start demo navigation to pre-defined location
+  const startDemoNavigation = useCallback(() => {
+    speak('Starting navigation to Majestic Bus Station.', 'high');
+    startNavigation(DEMO_DESTINATION.name, DEMO_DESTINATION.coords);
+  }, [startNavigation]);
+
   return {
     ...state,
     startNavigation,
     stopNavigation,
     requestPosition,
     isSupported,
+    startDemoNavigation,
   };
 }
